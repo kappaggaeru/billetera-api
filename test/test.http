@@ -3,7 +3,7 @@ GET http://localhost:3000/api/transactions
 
 
 ### Get transaction
-GET http://localhost:3000/api/transactions/000
+GET http://localhost:3000/api/transactions/6885269d7a1041cd19651114
 
 
 ### Add new transaction
@@ -20,7 +20,7 @@ Content-Type: application/json
 
 
 ### Update a transaction
-PUT http://localhost:3000/api/transactions/688500bcd52340fc23d89239
+PUT http://localhost:3000/api/transactions/6885269d7a1041cd19651114
 Content-Type: application/json
 
 {
@@ -33,7 +33,7 @@ Content-Type: application/json
 
 
 ### Delete a transaction
-DELETE http://localhost:3000/api/transactions/6884fdf9ff97296a13495a21
+DELETE http://localhost:3000/api/transactions/6885269d7a1041cd19651114
 
 
 ### Get all categories
@@ -41,7 +41,7 @@ GET http://localhost:3000/api/categories
 
 
 ### Get category
-GET http://localhost:3000/api/categories/6885003dd52340fc23d89230
+GET http://localhost:3000/api/categories/6885334a89cced09315760f4
 
 
 ### Create category
@@ -55,7 +55,7 @@ Content-Type: application/json
 
 
 ### Update a category
-PUT http://localhost:3000/api/categories/6885003dd52340fc23d89230
+PUT http://localhost:3000/api/categories/6885334a89cced09315760f5
 Content-Type: application/json
 
 {
@@ -65,4 +65,4 @@ Content-Type: application/json
 
 
 ### Delete a category
-DELETE http://localhost:3000/api/categories/6885003dd52340fc23d89230
+DELETE http://localhost:3000/api/categories/6885334a89cced09315760f4

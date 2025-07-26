@@ -1,5 +1,10 @@
-const mongoose = require("mongoose");
 const Transaction = require("../models/transaction.model");
+const {
+    validateObjectId,
+    handleBadRequest,
+    handleNotFound,
+    handleServerError
+} = require("../utils/controllerHelpers");
 
 exports.list = async (req, res) => {
     console.log("GET /api/transactions");
@@ -7,60 +12,62 @@ exports.list = async (req, res) => {
         const transactions = await Transaction.find().sort({ createdAt: -1 });
         res.json(transactions);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        return handleServerError(res, err);
     }
 };
 
 exports.find = async (req, res) => {
-    const { id } = req.params.id;
+    const { id } = req.params;
     console.log("GET /api/transactions/id", id);
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(400).json({ error: "Invalid ID format" });
-    }
+    if (!validateObjectId(id, res)) return;
     try {
         const transaction = await Transaction.findById(id);
-        if (!transaction) {
-            return res.status(404).json({ error: "Transaction not found" });
-        }
+        if (!transaction) return handleNotFound(res, "Transaction not found");
         res.json(transaction);
     } catch (err) {
-        res.status(500).json({ error: "Server error", detail: err.message });
+        return handleServerError(res, err);
     }
 }
 
 exports.add = async (req, res) => {
     console.log("POST /api/transactions", req.body);
     try {
-        const transaction = new Transaction(req.body);
+        const { type, amount, category, account, description } = req.body;
+        const transaction = new Transaction({ type, amount, category, account, description });
         await transaction.save();
         res.status(201).json(transaction);
-    } catch (error) {
-        res.status(400).json({ error: error.message });
+    } catch (err) {
+        return handleBadRequest(res, err);
     }
 };
 
 exports.update = async (req, res) => {
-    console.log("PUT /api/transactions", req.body);
+    const { id } = req.params;
+    console.log("PUT /api/transactions", id, req.body);
+    if (!validateObjectId(id, res)) return;
     try {
+        const { type, amount, category, account, description } = req.body;
         const updated = await Transaction.findByIdAndUpdate(
-            req.params.id,
-            req.body,
+            id,
+            { type, amount, category, account, description },
             { new: true }
         );
-        if (!updated) return res.status(404).send("Not found");
+        if (!updated) return handleNotFound(res, "Transaction not found");
         res.json(updated);
-    } catch (error) {
-        res.status(400).json({ error: error.message });
+    } catch (err) {
+        return handleBadRequest(res, err);
     }
 };
 
 exports.remove = async (req, res) => {
-    console.log("DELETE /api/transactions", req.params.id);
+    const { id } = req.params;
+    console.log("DELETE /api/transactions", id);
+    if (!validateObjectId(id, res)) return;
     try {
-        const transaction = await Transaction.findByIdAndDelete(req.params.id);
-        if (!transaction) return res.status(404).send("Not found");
+        const transaction = await Transaction.findByIdAndDelete(id);
+        if (!transaction) return handleNotFound(res, "Transaction not found");
         res.sendStatus(204);
     } catch (err) {
-        res.status(400).json({ error: err.message });
+        return handleServerError(res, err);
     }
 };

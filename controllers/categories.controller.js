@@ -1,5 +1,10 @@
-const mongoose = require("mongoose");
 const Category = require("../models/category.model");
+const {
+    validateObjectId,
+    handleBadRequest,
+    handleNotFound,
+    handleServerError
+} = require("../utils/controllerHelpers");
 
 exports.list = async (req, res) => {
     console.log("GET /api/categories");
@@ -7,60 +12,62 @@ exports.list = async (req, res) => {
         const categories = await Category.find().sort({ createdAt: -1 });
         res.json(categories);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        return handleServerError(err);
     }
 };
 
 exports.find = async (req, res) => {
-    const id = req.params.id;
+    const { id } = req.params;
     console.log("GET /api/categories", id);
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(400).json({ error: "Invalid ID format" });
-    }
+    if (!validateObjectId(id, res)) return;
     try {
         const category = await Category.findById(id);
-        if (!category) {
-            return res.status(404).json({ error: "Category not found" });
-        }
+        if (!category) return handleNotFound(res, "Category not found");
         res.json(category);
     } catch (err) {
-        res.status(500).json({ error: "Server error", detail: err.message });
+        return handleServerError(res, err);
     }
 }
 
 exports.add = async (req, res) => {
     console.log("POST /api/categories", req.body);
     try {
-        const category = new Category(req.body);
+        const { type, name } = req.body;
+        const category = new Category({ type, name });
         await category.save();
         res.status(201).json(category);
     } catch (err) {
-        res.status(400).json({ error: err.message });
+        return handleBadRequest(res, err);
     }
 };
 
 exports.update = async (req, res) => {
+    const { id } = req.params;
     console.log("PUT /api/categories", req.body);
+    if (!validateObjectId(id, res)) return;
     try {
+        const { type, name } = req.body;
         const updated = await Category.findByIdAndUpdate(
-            req.params.id,
-            req.body,
+            id,
+            { type, name },
             { new: true }
         );
-        if (!updated) return res.status(404).send("Not found");
+        if (!updated) return handleNotFound(res, "Category not found");
         res.json(updated);
     } catch (err) {
-        res.status(400).json({ error: err.message });
+        return handleBadRequest(res, err);
     }
 };
 
 exports.remove = async (req, res) => {
-    console.log("DELETE /api/categories", req.params.id);
+    const { id } = req.params;
+    console.log("DELETE /api/categories", id);
+    if (!validateObjectId(id, res)) return;
     try {
-        const deleted = await Category.findByIdAndDelete(req.params.id);
-        if (!deleted) return res.status(404).send("Not found");
+        const deleted = await Category.findByIdAndDelete(id);
+        if (!deleted) return handleNotFound(res, "Category not found");
         res.sendStatus(204);
     } catch (err) {
-        res.status(400).json({ error: err.message });
+        return handleServerError(res, err);
     }
 };
