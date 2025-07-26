@@ -15,7 +15,7 @@ app.use("/api/transactions", transactionsRoutes);
 app.use("/api/categories", categoriesRoutes);
 app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-const uri = "mongodb+srv://kappaggaeru:aezCZpVnUrHKqJHd@billetera.1xerbtp.mongodb.net/?retryWrites=true&w=majority&appName=Billetera";
+const uri = "mongodb+srv://user:pass@billetera.1xerbtp.mongodb.net/?retryWrites=true&w=majority&appName=Billetera";
 
 app.listen(3000, () => {
     console.log("🚀 Server running at http://localhost:3000");
