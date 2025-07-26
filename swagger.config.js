@@ -6,7 +6,7 @@ const options = {
     info: {
       title: "Wallet API",
       version: "1.0.0",
-      description: "API para gestionar transacciones e ingresos/egresos",
+      description: "API to manage transactions, income, and expenses"
     },
     servers: [
       {
